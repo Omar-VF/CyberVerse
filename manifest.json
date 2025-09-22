@@ -1,10 +1,15 @@
 {
-  "name": "Meeting Recorder",
-  "description": "Base Level Extension",
+  "name": "NOTiQ",
+  "description": "Meeting Transcriber",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
-    "default_popup": "index.html",
-    "default_icon": "hello_extensions.png"
+    "default_popup": "new.html",
+    "default_icon": "NOTiQ.png"
+  },
+  "icons": {
+    "16": "NOTiQ.png",
+    "48": "NOTiQ.png",
+    "128": "NOTiQ.png"
   }
 }
