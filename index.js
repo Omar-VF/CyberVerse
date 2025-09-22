@@ -75,14 +75,69 @@ function uploadToCloudinary(videoBlob) {
     .then(data => {
       if (data.secure_url) {
         document.getElementById('message').textContent='Upload Successful!';
-        // You can now use this URL, e.g., save it to a database
+        // Wait for backend confirmation before polling for summary
+        fetch('http://localhost:5000/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notification_type: 'upload', secure_url: data.secure_url })
+        })
+        .then(response => response.json())
+        .then(webhookData => {
+          if (webhookData.status === 'success') {
+            fetchSummary();
+          } else {
+            document.getElementById('message').textContent = 'Summary generation failed.';
+          }
+        })
+        .catch(error => {
+          document.getElementById('message').textContent = 'Error triggering summary generation.';
+          console.error('Error triggering summary generation:', error);
+        });
       } else {
-        document.getElementById('messsage').textContent='Upload failed';
+        document.getElementById('message').textContent='Upload failed';
       }
     })
     .catch(error => {
       console.error('Error uploading:', error);
     });
+}
+
+// Fetch summary from Flask backend and display it
+function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
+  const messageEl = document.getElementById('message');
+  function poll(attempt, lastSummary) {
+    fetch('http://localhost:5000/summary')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Summary fetch response:', data);
+        if (typeof data.summary === 'string' && data.summary.length > 0) {
+          if (lastSummary === null || data.summary !== lastSummary) {
+            messageEl.textContent = data.summary;
+            // Stop polling as soon as the summary changes
+          } else if (attempt < retries) {
+            messageEl.textContent = 'Waiting for new summary...';
+            setTimeout(() => poll(attempt + 1, lastSummary), interval);
+          } else {
+            messageEl.textContent = 'No new summary available.';
+          }
+        } else if (attempt < retries) {
+          messageEl.textContent = 'Waiting for summary...';
+          setTimeout(() => poll(attempt + 1, lastSummary), interval);
+        } else {
+          messageEl.textContent = 'No summary available.';
+        }
+      })
+      .catch(error => {
+        if (attempt < retries) {
+          messageEl.textContent = 'Waiting for summary...';
+          setTimeout(() => poll(attempt + 1, lastSummary), interval);
+        } else {
+          messageEl.textContent = 'Error fetching summary.';
+        }
+        console.error('Error fetching summary:', error);
+      });
+  }
+  poll(0, previousSummary);
 }
 
 

@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import google.generativeai as genai
 import whisper
 
@@ -14,6 +15,7 @@ def run_transcription(video_url):
 
 # Create the Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Define the webhook endpoint
 @app.route('/webhook', methods=['POST'])
@@ -31,7 +33,7 @@ def cloudinary_webhook():
 
         # --- 1. Place Your API Key Here ---
         # Paste the key you generated from Google AI Studio inside the quotes.
-        API_KEY = "AIzaSyDluLtPACh7LWWggKGZWiI6u9IW_UbNKn8"
+        API_KEY = "AIzaSyBXSNr1l-tvoWRQ8RgURSYXhS3aUIwCCRo"
 
         # --- 2. Configure the Library ---
         try:
@@ -47,7 +49,7 @@ def cloudinary_webhook():
             model = genai.GenerativeModel('gemini-1.5-flash')
 
             # Ask a question
-            response = model.generate_content(f"I will provide you with a raw transcript from a Google Meet. The transcript may contain errors, repetitions, or incomplete sentences, but it is mostly accurate. Your task is to carefully read through it and produce a clear, well-structured summary. Focus on the main topics discussed, key decisions made, action items, and any important concerns raised. Ignore filler words, transcription mistakes, and irrelevant small talk. The final summary should be concise, easy to understand, and written in professional language {transcript}")
+            response = model.generate_content(f"I will provide you with a raw transcript from a Google Meet. The transcript may contain errors, repetitions, or incomplete sentences, but it is mostly accurate. Your task is to carefully read through it and produce a clear, well-structured summary. Focus on the main topics discussed, key decisions made, action items, and any important concerns raised. Ignore filler words, transcription mistakes, and irrelevant small talk. The final summary should be concise, easy to understand, and written in professional language. Transcript: {transcript}")
 
             # Print the response
             print("\n--- Model Response ---")
@@ -58,10 +60,23 @@ def cloudinary_webhook():
 
         except Exception as e:
             print(f"An error occurred while generating content: {e}")
-        
-        return jsonify(status="success", message="Transcription started."), 200
+            return jsonify(status="error", message="Transcription or summary generation failed."), 500
+
+        # Only return success after summary is written
+        return jsonify(status="success", message="Summary generated."), 200
     
     return jsonify(status="ignored", message="Notification was not a new video upload."), 200
+
+
+# Endpoint to serve the latest summary
+@app.route('/summary', methods=['GET'])
+def get_summary():
+    try:
+        with open("summary.txt", "r", encoding="utf-8") as f:
+            summary = f.read()
+        return jsonify({"summary": summary})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # Run the app on port 5000
