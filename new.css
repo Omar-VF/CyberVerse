@@ -1,52 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=TT+Commons:wght@600&display=swap');
+   
 body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f7fa;
+      font-family: 'TT Commons', sans-serif;
+      background: #132D46; /* #132D46 - Dark blue */
       margin: 0;
-      padding: 20px 30px;
-      width: 280px;
-      box-sizing: border-box;
-      color: #333;
+      padding: 30px 25px;
       width: 400px;
-      height: 400px;
+      height:400px;
+      color: #FFFFFF; /* white text */
+      box-sizing: border-box;
+      user-select: none;
     }
-h1 {
-      font-weight: 600;
-      font-size: 1.4rem;
-      margin-bottom: 25px;
+    h1 {
+      font-weight: 600; /* Demibold */
+      font-size: 1.6rem;
+      margin-bottom: 30px;
+      color: #01c38d; /* Green accent */
       text-align: center;
-      color: #222;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
-.button-group {
+    .button-group {
       display: flex;
       justify-content: space-between;
       gap: 20px;
+      margin-bottom: 20px;
     }
-button {
+    button {
       flex: 1;
       padding: 12px 0;
-      font-size: 1rem;
       font-weight: 600;
+      font-size: 1rem;
+      color: #FFFFFF;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 3px 6px rgb(50 50 93 / 0.11);
-      color: white;
+      transition: background-color 0.25s ease;
+      box-shadow: 0 0 12px 0 rgba(1, 195, 141, 0.7);
     }
-button#start {
-      background-color: #4caf50;
+    button#start {
+      background-color: #01c38d;
     }
-button#start:hover {
-      background-color: #3d9842;
+    button#start:hover:not(:disabled) {
+      background-color: #0da97a;
     }
-button#stop {
-      background-color: #f44336;
+    button#stop {
+      background-color: #191E29;
+      color: #696E79; /* lighter grey */
+      box-shadow: none;
+      border: 1.5px solid #696E79;
     }
-button#stop:hover {
-      background-color: #cb170a;
+    button#stop:hover:not(:disabled) {
+      background-color: #2f3642;
+      color: #FFFFFF;
+      border-color: #01c38d;
+      box-shadow: 0 0 12px 0 #01c38d;
     }
-button:disabled {
-      opacity: 0.6;
+    button:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
       box-shadow: none;
     }
+
+
