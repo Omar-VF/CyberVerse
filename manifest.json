@@ -6,5 +6,10 @@
   "action": {
     "default_popup": "new.html",
     "default_icon": "NOTiQ.png"
+  },
+  "icons": {
+    "16": "NOTiQ.png",
+    "48": "NOTiQ.png",
+    "128": "NOTiQ.png"
   }
 }
