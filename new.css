@@ -61,5 +61,43 @@ body {
       cursor: not-allowed;
       box-shadow: none;
     }
+#container {
+  display: flex;
+  flex-direction: column; /* stack children vertically */
+  align-items: flex-start; /* align buttons and message to left */
+  gap: 8px; /* spacing between rows */
+  width: max-content; /* shrink to content size */
+}
+
+#start,
+#stop {
+  display: inline-block; /* keep buttons inline horizontally */
+  margin-right: 10px; /* space between buttons */
+}
+
+#container > button {
+  /* To keep buttons in one row, wrap them in a flex row */
+  flex: none;
+}
+
+#buttons-row {
+  display: flex; /* horizontally align buttons */
+  width: 100%;
+  gap: 10px;
+}
+
+#message{
+    
+  margin-top: 12px;                  /* space from buttons */
+  padding: 8px 15px;                /* inside spacing */
+  font-size: 30px;                  /* readable size */
+  color: white;                     /* neutral dark text */        /* very light blue background */
+          /* light blue border */
+   /* subtle shadow */
+  max-width: 320px;
+  text-align: center;               /* center align text */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;                /* avoid text selection */
+}
 
 

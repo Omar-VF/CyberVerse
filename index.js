@@ -74,10 +74,10 @@ function uploadToCloudinary(videoBlob) {
     .then(response => response.json())
     .then(data => {
       if (data.secure_url) {
-        console.log('🚀 Upload successful! Video URL:', data.secure_url);
+        document.getElementById('message').textContent='Upload Successful!';
         // You can now use this URL, e.g., save it to a database
       } else {
-        console.error('Upload failed:', data);
+        document.getElementById('messsage').textContent='Upload failed';
       }
     })
     .catch(error => {
