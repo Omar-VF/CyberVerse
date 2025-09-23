@@ -105,6 +105,7 @@ function uploadToCloudinary(videoBlob) {
 // Fetch summary from Flask backend and display it
 function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
   const messageEl = document.getElementById('message');
+  const downloadBtn = document.getElementById('download-summary');
   function poll(attempt, lastSummary) {
     fetch('http://localhost:5000/summary')
       .then(response => response.json())
@@ -112,27 +113,44 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
         console.log('Summary fetch response:', data);
         if (typeof data.summary === 'string' && data.summary.length > 0) {
           if (lastSummary === null || data.summary !== lastSummary) {
-            messageEl.textContent = data.summary;
-            // Stop polling as soon as the summary changes
+            // Hide summary text, show download button
+            messageEl.style.display = 'none';
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.onclick = function() {
+              const blob = new Blob([data.summary], { type: 'text/plain' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'meeting-summary.txt';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            };
           } else if (attempt < retries) {
             messageEl.textContent = 'Waiting for new summary...';
             setTimeout(() => poll(attempt + 1, lastSummary), interval);
           } else {
             messageEl.textContent = 'No new summary available.';
+            downloadBtn.style.display = 'none';
           }
         } else if (attempt < retries) {
           messageEl.textContent = 'Waiting for summary...';
+          downloadBtn.style.display = 'none';
           setTimeout(() => poll(attempt + 1, lastSummary), interval);
         } else {
           messageEl.textContent = 'No summary available.';
+          downloadBtn.style.display = 'none';
         }
       })
       .catch(error => {
         if (attempt < retries) {
           messageEl.textContent = 'Waiting for summary...';
+          downloadBtn.style.display = 'none';
           setTimeout(() => poll(attempt + 1, lastSummary), interval);
         } else {
           messageEl.textContent = 'Error fetching summary.';
+          downloadBtn.style.display = 'none';
         }
         console.error('Error fetching summary:', error);
       });
