@@ -76,6 +76,7 @@ function uploadToCloudinary(videoBlob) {
     .then(response => response.json())
     .then(data => {
       if (data.secure_url) {
+  window.latestVideoUrl = data.secure_url;
   const messageEl = document.getElementById('message');
   messageEl.style.display = 'block';
   messageEl.textContent = 'Upload Successful!';
@@ -115,6 +116,7 @@ function uploadToCloudinary(videoBlob) {
 function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
   const messageEl = document.getElementById('message');
   const downloadBtn = document.getElementById('download-summary');
+  const downloadVideoBtn = document.getElementById('download-video');
   function poll(attempt, lastSummary) {
     fetch(`${NGROK_URL}/summary`)
       .then(response => {
@@ -142,31 +144,59 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
               document.body.removeChild(a);
               URL.revokeObjectURL(url);
             };
+            // Show video download button if available
+            if (window.latestVideoUrl) {
+              downloadVideoBtn.style.display = 'inline-block';
+              downloadVideoBtn.onclick = async function() {
+                try {
+                  const response = await fetch(window.latestVideoUrl);
+                  const blob = await response.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'meeting-video.webm';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                } catch (err) {
+                  alert('Failed to download video.');
+                  console.error('Video download error:', err);
+                }
+              };
+            } else {
+              downloadVideoBtn.style.display = 'none';
+            }
           } else if (attempt < retries) {
             messageEl.style.display = 'block';
             messageEl.textContent = 'Waiting for new summary...';
             downloadBtn.style.display = 'none';
+            downloadVideoBtn.style.display = 'none';
             setTimeout(() => poll(attempt + 1, lastSummary), interval);
           } else {
             messageEl.style.display = 'block';
             messageEl.textContent = 'No new summary available.';
             downloadBtn.style.display = 'none';
+            downloadVideoBtn.style.display = 'none';
           }
         } else if (attempt < retries) {
           messageEl.style.display = 'block';
           messageEl.textContent = 'Waiting for summary...';
           downloadBtn.style.display = 'none';
+          downloadVideoBtn.style.display = 'none';
           setTimeout(() => poll(attempt + 1, lastSummary), interval);
         } else {
           messageEl.style.display = 'block';
           messageEl.textContent = 'No summary available.';
           downloadBtn.style.display = 'none';
+          downloadVideoBtn.style.display = 'none';
         }
       })
       .catch(error => {
         messageEl.style.display = 'block';
         messageEl.textContent = 'Error fetching summary: ' + error.message;
         downloadBtn.style.display = 'none';
+        downloadVideoBtn.style.display = 'none';
         console.error('Error fetching summary:', error);
       });
   }
