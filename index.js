@@ -1,3 +1,5 @@
+// Set your ngrok URL here
+const NGROK_URL = 'http://localhost:5000';
 let mediaRecorder;
 let recordedChunks = [];
 
@@ -74,27 +76,34 @@ function uploadToCloudinary(videoBlob) {
     .then(response => response.json())
     .then(data => {
       if (data.secure_url) {
-        document.getElementById('message').textContent='Upload Successful!';
+  const messageEl = document.getElementById('message');
+  messageEl.style.display = 'block';
+  messageEl.textContent = 'Upload Successful!';
         // Wait for backend confirmation before polling for summary
-        fetch('http://localhost:5000/webhook', {
+  fetch(`${NGROK_URL}/webhook`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ notification_type: 'upload', secure_url: data.secure_url })
         })
         .then(response => response.json())
         .then(webhookData => {
+          console.log('Webhook response:', webhookData);
           if (webhookData.status === 'success') {
+            console.log('Calling fetchSummary()');
             fetchSummary();
           } else {
-            document.getElementById('message').textContent = 'Summary generation failed.';
+            messageEl.style.display = 'block';
+            messageEl.textContent = 'Summary generation failed.';
           }
         })
         .catch(error => {
-          document.getElementById('message').textContent = 'Error triggering summary generation.';
+          messageEl.style.display = 'block';
+          messageEl.textContent = 'Error triggering summary generation.';
           console.error('Error triggering summary generation:', error);
         });
       } else {
-        document.getElementById('message').textContent='Upload failed';
+  messageEl.style.display = 'block';
+  messageEl.textContent = 'Upload failed';
       }
     })
     .catch(error => {
@@ -107,7 +116,7 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
   const messageEl = document.getElementById('message');
   const downloadBtn = document.getElementById('download-summary');
   function poll(attempt, lastSummary) {
-    fetch('http://localhost:5000/summary')
+  fetch(`${NGROK_URL}/summary`)
       .then(response => response.json())
       .then(data => {
         console.log('Summary fetch response:', data);
@@ -128,27 +137,34 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
               URL.revokeObjectURL(url);
             };
           } else if (attempt < retries) {
+            messageEl.style.display = 'block';
             messageEl.textContent = 'Waiting for new summary...';
+            downloadBtn.style.display = 'none';
             setTimeout(() => poll(attempt + 1, lastSummary), interval);
           } else {
+            messageEl.style.display = 'block';
             messageEl.textContent = 'No new summary available.';
             downloadBtn.style.display = 'none';
           }
         } else if (attempt < retries) {
+          messageEl.style.display = 'block';
           messageEl.textContent = 'Waiting for summary...';
           downloadBtn.style.display = 'none';
           setTimeout(() => poll(attempt + 1, lastSummary), interval);
         } else {
+          messageEl.style.display = 'block';
           messageEl.textContent = 'No summary available.';
           downloadBtn.style.display = 'none';
         }
       })
       .catch(error => {
         if (attempt < retries) {
+          messageEl.style.display = 'block';
           messageEl.textContent = 'Waiting for summary...';
           downloadBtn.style.display = 'none';
           setTimeout(() => poll(attempt + 1, lastSummary), interval);
         } else {
+          messageEl.style.display = 'block';
           messageEl.textContent = 'Error fetching summary.';
           downloadBtn.style.display = 'none';
         }
