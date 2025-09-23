@@ -46,18 +46,17 @@ def cloudinary_webhook():
         try:
             print("Connecting to the Gemini model...")
             # Using 'gemini-1.5-flash' as it's fast and capable
-            #model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-1.5-flash')
 
             # Ask a question
-            #response = model.generate_content(f"I will provide you with a raw transcript from a Google Meet. The transcript may contain errors, repetitions, or incomplete sentences, but it is mostly accurate. Your task is to carefully read through it and produce a clear, well-structured summary. Focus on the main topics discussed, key decisions made, action items, and any important concerns raised. Ignore filler words, transcription mistakes, and irrelevant small talk. The final summary should be concise, easy to understand, and written in professional language. Transcript: {transcript}")
+            response = model.generate_content(f"I will provide you with a raw transcript from a Google Meet. The transcript may contain errors, repetitions, or incomplete sentences, but it is mostly accurate. Your task is to carefully read through it and produce a clear, well-structured summary. Focus on the main topics discussed, key decisions made, action items, and any important concerns raised. Ignore filler words, transcription mistakes, and irrelevant small talk. The final summary should be concise, easy to understand, and written in professional language. Transcript: {transcript}")
 
             # Print the response
             print("\n--- Model Response ---")
-            #print(response.text)
+            print(response.text)
             print("----------------------")
             with open("summary.txt", "w") as f:
-                #f.write(response.text)
-                f.write("temporary text")
+                f.write(response.text)
 
         except Exception as e:
             print(f"An error occurred while generating content: {e}")
