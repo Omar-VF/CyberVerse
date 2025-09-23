@@ -1,5 +1,5 @@
 // Set your ngrok URL here
-const NGROK_URL = 'http://localhost:5000';
+const NGROK_URL = 'https://554c736c7b69.ngrok-free.app/';
 let mediaRecorder;
 let recordedChunks = [];
 
