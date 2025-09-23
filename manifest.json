@@ -7,6 +7,9 @@
     "default_popup": "new.html",
     "default_icon": "NOTiQ.png"
   },
+  "host_permissions": [
+  "https://554c736c7b69.ngrok-free.app/*"
+],
   "icons": {
     "16": "NOTiQ.png",
     "48": "NOTiQ.png",

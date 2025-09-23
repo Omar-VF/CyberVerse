@@ -116,8 +116,14 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
   const messageEl = document.getElementById('message');
   const downloadBtn = document.getElementById('download-summary');
   function poll(attempt, lastSummary) {
-  fetch(`${NGROK_URL}/summary`)
-      .then(response => response.json())
+    fetch(`${NGROK_URL}/summary`)
+      .then(response => {
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        return response.json();
+      })
       .then(data => {
         console.log('Summary fetch response:', data);
         if (typeof data.summary === 'string' && data.summary.length > 0) {
@@ -158,16 +164,9 @@ function fetchSummary(retries = 20, interval = 3000, previousSummary = null) {
         }
       })
       .catch(error => {
-        if (attempt < retries) {
-          messageEl.style.display = 'block';
-          messageEl.textContent = 'Waiting for summary...';
-          downloadBtn.style.display = 'none';
-          setTimeout(() => poll(attempt + 1, lastSummary), interval);
-        } else {
-          messageEl.style.display = 'block';
-          messageEl.textContent = 'Error fetching summary.';
-          downloadBtn.style.display = 'none';
-        }
+        messageEl.style.display = 'block';
+        messageEl.textContent = 'Error fetching summary: ' + error.message;
+        downloadBtn.style.display = 'none';
         console.error('Error fetching summary:', error);
       });
   }

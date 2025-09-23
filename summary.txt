@@ -1,1 +1,1 @@
-The provided transcript is too short to generate a meaningful summary.  It only contains a greeting and a seemingly unrelated question about travel discomfort.  More context is needed.
+The transcript provided only contains audio test signals ("Hello, hello, check, check, testing, testing, hello, check").  Therefore, no summary of a meeting or discussion is possible.
