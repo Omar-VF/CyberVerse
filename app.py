@@ -33,7 +33,7 @@ def cloudinary_webhook():
 
         # --- 1. Place Your API Key Here ---
         # Paste the key you generated from Google AI Studio inside the quotes.
-        API_KEY = "AIzaSyDnAsXruURrLKMseE85z2QnSGKTWaeOcjE"
+        API_KEY = "AIzaSyB3oFn8G3KH52YhBEayRS07xcMM5HRmj3k"
 
         # --- 2. Configure the Library ---
         try:
